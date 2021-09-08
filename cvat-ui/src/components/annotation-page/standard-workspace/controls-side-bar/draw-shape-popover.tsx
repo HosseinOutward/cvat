@@ -16,6 +16,7 @@ import LabelSelector from 'components/label-selector/label-selector';
 import CVATTooltip from 'components/common/cvat-tooltip';
 
 interface Props {
+    Visibility: boolean;
     shapeType: ShapeType;
     labels: any[];
     minimumPoints: number;
@@ -50,9 +51,22 @@ function DrawShapePopoverComponent(props: Props): JSX.Element {
         onChangeRectDrawingMethod,
         onChangeCuboidDrawingMethod,
         jobInstance,
+        Visibility,
     } = props;
 
     const is2D = jobInstance.task.dimension === DimensionType.DIM_2D;
+
+    if (Visibility === false) {
+        return (
+            <div className='cvat-draw-shape-popover-content'>
+                <Row justify='start'>
+                    <Col>
+                        <Text className='cvat-text-color'>No Label Available</Text>
+                    </Col>
+                </Row>
+            </div>
+        );
+    }
 
     return (
         <div className='cvat-draw-shape-popover-content'>

@@ -67,16 +67,36 @@ class AttributeSerializer(serializers.ModelSerializer):
 
         return attribute
 
+
+class LabelShapeSerializer(serializers.ModelSerializer):
+    name = serializers.ListField()
+    class Meta:
+        model = models.LabelShapeSpec
+        fields = ["id", "name"]
+
+    def to_internal_value(self, data):
+        # FinalList = []
+        # for Item in data:
+        #     FinalList.append(Item['name'])
+        return (data)
+
+    def to_representation(self, instance):
+        import ast
+        #representation = super().to_representation(instance)
+        return(ast.literal_eval(instance))
+
+
 class LabelSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(required=False)
     attributes = AttributeSerializer(many=True, source='attributespec_set',
         default=[])
+    shapes = LabelShapeSerializer(default=[])
     color = serializers.CharField(allow_blank=True, required=False)
     deleted = serializers.BooleanField(required=False, help_text="Delete label if value is true from proper Task/Project object")
 
     class Meta:
         model = models.Label
-        fields = ('id', 'name', 'color', 'attributes', 'deleted')
+        fields = ('id', 'name', 'color', 'attributes', 'deleted', 'shapes')
 
     def validate(self, attrs):
         if attrs.get('deleted') == True and attrs.get('id') is None:
@@ -101,9 +121,10 @@ class LabelSerializer(serializers.ModelSerializer):
             except models.Label.DoesNotExist:
                 raise exceptions.NotFound(detail='Not found label with id #{} to change'.format(validated_data['id']))
             db_label.name = validated_data.get('name', db_label.name)
+            db_label.shapes = validated_data.get('shapes', db_label.shapes)
             logger.info("{}({}) label was updated".format(db_label.name, db_label.id))
         else:
-            db_label = models.Label.objects.create(name=validated_data.get('name'), **instance)
+            db_label = models.Label.objects.create(name=validated_data.get('name'), shapes=validated_data.get('shapes'), **instance)
             logger.info("New {} label was created".format(db_label.name))
         if validated_data.get('deleted') == True:
             db_label.delete()

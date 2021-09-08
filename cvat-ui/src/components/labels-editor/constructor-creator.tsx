@@ -4,11 +4,14 @@
 
 import React from 'react';
 
+import { List } from 'lodash';
+
 import LabelForm from './label-form';
 import { Label } from './common';
 
 interface Props {
     labelNames: string[];
+    labelShapes: List<string>;
     onCreate: (label: Label | null) => void;
 }
 
@@ -30,10 +33,10 @@ function compareProps(prevProps: Props, nextProps: Props): boolean {
 }
 
 function ConstructorCreator(props: Props): JSX.Element {
-    const { onCreate, labelNames } = props;
+    const { onCreate, labelNames, labelShapes } = props;
     return (
         <div className='cvat-label-constructor-creator'>
-            <LabelForm label={null} onSubmit={onCreate} labelNames={labelNames} />
+            <LabelForm label={null} onSubmit={onCreate} labelNames={labelNames} labelShapes={labelShapes} />
         </div>
     );
 }

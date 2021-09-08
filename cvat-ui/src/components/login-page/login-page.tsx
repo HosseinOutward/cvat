@@ -29,6 +29,8 @@ function LoginPageComponent(props: LoginPageComponentProps & RouteComponentProps
         xl: { span: 4 },
     };
 
+    document.body.style.backgroundColor = "#e6dfdc";
+
     const { Content } = Layout;
 
     const { fetching, onLogin, renderResetPassword } = props;

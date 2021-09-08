@@ -2,6 +2,11 @@
 //
 // SPDX-License-Identifier: MIT
 
+export interface Shapes {
+    id: number;
+    name: string;
+}
+
 export interface Attribute {
     id: number;
     name: string;
@@ -11,6 +16,7 @@ export interface Attribute {
 }
 
 export interface Label {
+    shapes: Shapes[];
     name: string;
     color: string;
     id: number;

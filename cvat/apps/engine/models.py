@@ -336,6 +336,7 @@ class Job(models.Model):
 
 class Label(models.Model):
     task = models.ForeignKey(Task, null=True, blank=True, on_delete=models.CASCADE)
+    shapes = models.CharField(max_length=256, null=True, blank=True)
     project = models.ForeignKey(Project, null=True, blank=True, on_delete=models.CASCADE)
     name = SafeCharField(max_length=64)
     color = models.CharField(default='', max_length=8)
@@ -382,6 +383,15 @@ class AttributeSpec(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class LabelShapeSpec(models.Model):
+    label = models.ForeignKey(Label, on_delete=models.CASCADE)
+    name = models.CharField(max_length=4096)
+
+    class Meta:
+        default_permissions = ()
+
 
 class AttributeVal(models.Model):
     # TODO: add a validator here to be sure that it corresponds to self.label

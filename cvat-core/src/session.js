@@ -1999,6 +1999,9 @@
                     case 'assignee':
                         taskData.assignee_id = this.assignee ? this.assignee.id : null;
                         break;
+                    case 'shape':
+                        taskData.shapes = this.shapes;
+                        break;
                     case 'name':
                         taskData.name = this.name;
                         break;

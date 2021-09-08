@@ -20,6 +20,7 @@
                 mutable: undefined,
                 name: undefined,
                 values: undefined,
+                shapes: undefined,
             };
 
             for (const key in data) {
@@ -71,6 +72,9 @@
                     inputType: {
                         get: () => data.input_type,
                     },
+                    shapes: {
+                        get: () => data.shapes,
+                    },
                     /**
                      * @name mutable
                      * @type {boolean}
@@ -108,6 +112,7 @@
         toJSON() {
             const object = {
                 name: this.name,
+                shapes: this.shapes,
                 mutable: this.mutable,
                 input_type: this.inputType,
                 default_value: this.defaultValue,
@@ -132,6 +137,7 @@
             const data = {
                 id: undefined,
                 name: undefined,
+                shapes: undefined,
                 color: undefined,
                 deleted: false,
             };
@@ -183,6 +189,12 @@
                             data.name = name;
                         },
                     },
+                    shapes: {
+                        get: () => data.shapes,
+                        set: (shapes) => {
+                            data.shapes = shapes;
+                        },
+                    },
                     /**
                      * @name color
                      * @type {string}
@@ -220,8 +232,20 @@
         }
 
         toJSON() {
+            var FinalList = []
+            for(var Index=0; Index < this.shapes.length; Index++){
+                if(this.shapes[Index].name == undefined){
+                    FinalList.push(this.shapes[Index])
+                }
+                else{
+                    FinalList.push(this.shapes[Index].name)
+                }
+            }
+            this.shapes = FinalList
+
             const object = {
                 name: this.name,
+                shapes: this.shapes,
                 attributes: [...this.attributes.map((el) => el.toJSON())],
                 color: this.color,
             };

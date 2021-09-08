@@ -136,7 +136,7 @@ class TasksPageComponent extends React.PureComponent<TasksPageProps & RouteCompo
             .replace(/\s*:+\s*/g, ':')
             .trim();
 
-        const fields = ['name', 'mode', 'owner', 'assignee', 'status', 'id'];
+        const fields = ['name', 'mode', 'owner', 'assignee', 'status', 'id', 'shapes'];
         for (const field of fields) {
             query[field] = null;
         }

@@ -13,6 +13,9 @@ import Form, { FormInstance } from 'antd/lib/form';
 import Badge from 'antd/lib/badge';
 import { Store } from 'antd/lib/form/interface';
 
+import { Multiselect } from 'multiselect-react-dropdown';
+import { List } from 'lodash';
+
 import CVATTooltip from 'components/common/cvat-tooltip';
 import ColorPicker from 'components/annotation-page/standard-workspace/objects-side-bar/color-picker';
 import { ColorizeIcon } from 'icons';
@@ -33,6 +36,7 @@ export enum AttributeType {
 interface Props {
     label: Label | null;
     labelNames?: string[];
+    labelShapes?: List<string>;
     onSubmit: (label: Label | null) => void;
 }
 
@@ -40,10 +44,14 @@ export default class LabelForm extends React.Component<Props> {
     private continueAfterSubmit: boolean;
     private formRef: RefObject<FormInstance>;
 
+    ShapeValue: List<string>[];
+    static value: any;
+
     constructor(props: Props) {
         super(props);
         this.continueAfterSubmit = false;
         this.formRef = React.createRef<FormInstance>();
+        this.ShapeValue = [];
     }
 
     private handleSubmit = (values: Store): void => {
@@ -52,6 +60,7 @@ export default class LabelForm extends React.Component<Props> {
         onSubmit({
             name: values.name,
             id: label ? label.id : idGenerator(),
+            shapes: LabelForm.value,
             color: values.color,
             attributes: values.attributes.map((attribute: Store) => {
                 let attrValues: string | string[] = attribute.values;
@@ -404,6 +413,64 @@ export default class LabelForm extends React.Component<Props> {
         );
     }
 
+    private AddShape2(event: any): JSX.Element {
+        if (event.key === 'Enter') {
+            return (
+                <Form.Item>
+                    <div>
+                        <h1>Enter Pressed</h1>
+                    </div>
+                </Form.Item>
+            );
+        }
+        return (
+            <div>
+                <h1>Enter Not Pressed</h1>
+            </div>
+        );
+    }
+    handleChange(e: any) {
+        const shapeList = [];
+        for (let i = 0, le = e.length; i < le; i++) {
+            shapeList.push({ name: e[i].name, id: e[i].id });
+        }
+        LabelForm.value = shapeList;
+        return { value: shapeList };
+    }
+    private renderLabelShape(): JSX.Element {
+        const { label } = this.props;
+        LabelForm.value = label ? label.shapes : [{ name: 'default', id: 0 }];
+        const options = [
+            { name: 'polygon', id: 1 },
+            { name: 'polyline', id: 2 },
+            { name: 'cuboid', id: 3 },
+            { name: 'points', id: 4 },
+            { name: 'rectangle', id: 5 },
+        ];
+        return (
+            <Form.Item
+                hasFeedback
+                name='shapes'
+                initialValue={LabelForm.value}
+                rules={[
+                    {
+                        pattern: patterns.validateAttributeName.pattern,
+                        message: patterns.validateAttributeName.message,
+                    },
+                ]}
+            >
+                <Multiselect
+                    options={options} // Options to display in the dropdown
+                    // selectedValues= {"Default"} // Preselected value to persist in dropdown
+                    // onRemove={this.onRemove} // Function will trigger on remove event
+
+                    onSelect={this.handleChange} // Function will trigger on select event
+                    displayValue='name' // Property name to display in the dropdown options
+                />
+            </Form.Item>
+        );
+    }
+
     private renderNewAttributeButton(): JSX.Element {
         return (
             <Form.Item>
@@ -529,6 +596,11 @@ export default class LabelForm extends React.Component<Props> {
             <Form onFinish={this.handleSubmit} layout='vertical' ref={this.formRef}>
                 <Row justify='start' align='top'>
                     <Col span={10}>{this.renderLabelNameInput()}</Col>
+
+                    <Col span={5} style={{ marginLeft: 20 }}>
+                        {this.renderLabelShape()}
+                    </Col>
+
                     <Col span={3} offset={1}>
                         {this.renderChangeColorButton()}
                     </Col>

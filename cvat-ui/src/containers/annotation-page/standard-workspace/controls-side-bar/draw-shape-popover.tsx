@@ -166,6 +166,8 @@ class DrawShapePopoverContainer extends React.PureComponent<Props, State> {
     };
 
     public render(): JSX.Element {
+        let Visible = false;
+
         const {
             rectDrawingMethod, cuboidDrawingMethod, selectedLabelID, numberOfPoints,
         } = this.state;
@@ -174,10 +176,27 @@ class DrawShapePopoverContainer extends React.PureComponent<Props, State> {
             normalizedKeyMap, labels, shapeType, jobInstance,
         } = this.props;
 
+        const ChangedLabel: any[] = [];
+        Object.assign(ChangedLabel, labels);
+        for (let Index = 0; Index < labels.length; Index++) {
+            if (!labels[Index].shapes.includes(shapeType)) {
+                ChangedLabel.splice(Index, 1);
+                continue;
+            }
+            for (let shape = 0; shape < labels[Index].shapes.length; shape++) {
+                if (labels[Index].shapes[shape] === 'default') {
+                    Visible = true;
+                } else if (labels[Index].shapes[shape] === shapeType) {
+                    Visible = true;
+                }
+            }
+        }
+
         return (
             <DrawShapePopoverComponent
+                Visibility={Visible}
                 jobInstance={jobInstance}
-                labels={labels}
+                labels={ChangedLabel}
                 shapeType={shapeType}
                 minimumPoints={this.minimumPoints}
                 selectedLabelID={selectedLabelID}
